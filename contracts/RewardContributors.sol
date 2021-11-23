@@ -24,6 +24,27 @@ contract RewardContributors is AccessControl {
     uint timeStamp;
     bytes32 public constant CONTRIBUTOR_ROLE = keccak256("CONTRIBUTOR_ROLE");
 
+    /**
+     * @dev Emitted when `contributorAddr` address is added to contributors list
+     */
+    event AddedContributor(address indexed contributorAddr);
+
+    /**
+     * @dev Emitted when `contributorAddr` address is removed from contributors list
+     */
+    event RemovedContributor(address indexed contributorAddr);
+
+    /**
+     * @dev Emitted when `amount` tokens are granted to all contributors
+     */
+    event TokensGranted(uint amount);
+
+    /**
+     * @dev Emitted when `amount` tokens are moved from one account (`sender`) to
+     * another (`recipient`) as reward
+     */
+    event Contribute(address sender, address recipient, uint amount);
+
     constructor(uint256 initialSupply, address tokenAddr, address admin) {
         token = Token(tokenAddr);
         _setupRole(DEFAULT_ADMIN_ROLE, admin);
@@ -33,6 +54,7 @@ contract RewardContributors is AccessControl {
     /** 
      * @dev Function to be used by Admin to add contributor
      * @param recipient is the contributor
+     * and function emits AddedContributor event
      */
     function addContributor(address recipient) public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(contributors[recipient].exists == false, "Contributor already added to the list");
@@ -41,14 +63,17 @@ contract RewardContributors is AccessControl {
         contributors[recipient].opt_in_status = true;
         contributors[recipient].exists = true;
         contributorsList.push(recipient);
+        emit AddedContributor(recipient);
     }
 
     /**
      * @dev Function to be used by Admin to remove contributor
      * @param recipient is the contributor
+     * and function emits RemovedContributor event
      */
     function removeContributor(address recipient) public onlyRole(DEFAULT_ADMIN_ROLE) {
         revokeRole(CONTRIBUTOR_ROLE, recipient);
+        emit RemovedContributor(recipient);
     }
 
     /**
@@ -71,12 +96,14 @@ contract RewardContributors is AccessControl {
      * @dev This internal Function to be used by Admin to grant tokens at the start of an epoch
      * to all contributors
      * @param _amount is the amount of tokens that every contributor gets
+     * and function emits TokensGranted event
      */
     function grantTokens(uint _amount) internal  {
         for (uint256 i = 0; i < contributorsList.length; i++) {
             token.mint(contributorsList[i], _amount);
             contributors[contributorsList[i]].amount = _amount;
         }
+        emit TokensGranted(_amount);
     }
 
      /**
@@ -116,6 +143,7 @@ contract RewardContributors is AccessControl {
      * @param sender address who is sending the rewards
      * @param recipient address who is receiving the rewards
      * @param _amount amount which is getting transferred as reward
+     * and function emits Contribute event
      */
     function contribute(address sender, address recipient, uint _amount) public onlyRole(CONTRIBUTOR_ROLE) {
         require(block.timestamp - timeStamp <= 1 hours, "Lockin Period ended");
@@ -123,6 +151,7 @@ contract RewardContributors is AccessControl {
         contributors[sender].amount -= _amount;
         require(contributors[recipient].opt_in_status == true, "Recipient opted out to receive funds");
         token.transferFrom(sender, recipient, _amount);
+        emit Contribute(sender, recipient, _amount);
     }
 
     /**
