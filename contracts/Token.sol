@@ -3,14 +3,13 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Token is ERC20, Pausable, Ownable {
+contract Token is ERC20, Pausable {
     /** 
      * @dev Constructor for Token contract
      */
     constructor() ERC20("give coin", "GIVE"){
-        _mint(owner(), 10000 * 10 ** decimals());
+        _mint(msg.sender, 10000 * 10 ** decimals());
     }
     
 
@@ -19,7 +18,7 @@ contract Token is ERC20, Pausable, Ownable {
      * @param to Address to which newly minted tokens should go
      * @param amount Quantity of token to be minted
      */
-    function mint(address to, uint256 amount) public onlyOwner {
+    function mint(address to, uint256 amount) public {
         _mint(to, amount);
     }
 
@@ -28,21 +27,21 @@ contract Token is ERC20, Pausable, Ownable {
      * @param from Address where tokens gets burned from
      * @param amount Quantity of token to be burned
      */
-    function burn(address from, uint256 amount) public onlyOwner {
+    function burn(address from, uint256 amount) public {
         _burn(from, amount);
     }
 
     /** 
      * @dev Function to be used by owner to pause
      */
-    function pause() public onlyOwner {
+    function pause() public {
         _pause();
     }
 
     /**
      * @dev Function to be used by owner to unpause
      */
-    function unpause() public onlyOwner {
+    function unpause() public  {
         _unpause();
     }
 

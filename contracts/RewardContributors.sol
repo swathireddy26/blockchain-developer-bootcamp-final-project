@@ -45,10 +45,9 @@ contract RewardContributors is AccessControl {
      */
     event Contribute(address sender, address recipient, uint amount);
 
-    constructor(uint256 initialSupply, address tokenAddr, address admin) {
+    constructor(address tokenAddr) {
         token = Token(tokenAddr);
-        _setupRole(DEFAULT_ADMIN_ROLE, admin);
-        token.mint(msg.sender, initialSupply * 10 ** token.decimals());
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     /** 
@@ -72,6 +71,7 @@ contract RewardContributors is AccessControl {
      * and function emits RemovedContributor event
      */
     function removeContributor(address recipient) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(contributors[recipient].exists == true, "Trying to remove contributor who doesn't exists");
         revokeRole(CONTRIBUTOR_ROLE, recipient);
         emit RemovedContributor(recipient);
     }
@@ -79,16 +79,16 @@ contract RewardContributors is AccessControl {
     /**
      * @dev Function to be used by Admin to start an epoch
      */
-    function startEpoch() public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function startEpoch(uint grantedTokens) public onlyRole(DEFAULT_ADMIN_ROLE) {
         timeStamp = block.timestamp;
-        grantTokens(100);
+        grantTokens(grantedTokens);
     }
 
     /**
      * @dev Function to be used by Admin to end an epoch
      */
     function endEpoch() public onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(block.timestamp - timeStamp >= 1 hours, "Epoch end time not reached");
+        require(block.timestamp - timeStamp >= 10 days, "Epoch end time not reached");
         burnTokens();
     }
 
@@ -120,38 +120,35 @@ contract RewardContributors is AccessControl {
     /**
      * @dev This Function to be used by contributor to opt out from receiving funds 
      * from fellow contributors
-     * @param  contributorAddr is the address which got opted out
      */
-    function optOut(address contributorAddr) public onlyRole(CONTRIBUTOR_ROLE) {
-        require(contributors[contributorAddr].opt_in_status == true, "Already opted out");
-        contributors[contributorAddr].opt_in_status = false;
+    function optOut() public onlyRole(CONTRIBUTOR_ROLE) {
+        require(contributors[msg.sender].opt_in_status == true, "Already opted out");
+        contributors[msg.sender].opt_in_status = false;
     }
 
     /**
      * @dev This Function to be used by contributor to opt in from receiving funds 
      * from fellow contributors, which was opted out earlier
-     * @param  contributorAddr is the address which wants to opted in
      */
-    function optIn(address contributorAddr) public onlyRole(CONTRIBUTOR_ROLE) {
-        require(contributors[contributorAddr].opt_in_status == false, "Already opted in");
-        contributors[contributorAddr].opt_in_status = true;
+    function optIn() public onlyRole(CONTRIBUTOR_ROLE) {
+        require(contributors[msg.sender].opt_in_status == false, "Already opted in");
+        contributors[msg.sender].opt_in_status = true;
     }
 
     /**
      * @dev This Function to be used by contributor to contribute funds 
      * to fellow contributors
-     * @param sender address who is sending the rewards
      * @param recipient address who is receiving the rewards
      * @param _amount amount which is getting transferred as reward
      * and function emits Contribute event
      */
-    function contribute(address sender, address recipient, uint _amount) public onlyRole(CONTRIBUTOR_ROLE) {
-        require(block.timestamp - timeStamp <= 1 hours, "Lockin Period ended");
-        require(contributors[sender].amount >= _amount, "Insuffient funds to contribute");
-        contributors[sender].amount -= _amount;
+    function contribute(address recipient, uint _amount) public onlyRole(CONTRIBUTOR_ROLE) {
+        require(block.timestamp - timeStamp <= 10 days, "Lockin Period ended");
+        require(contributors[msg.sender].amount >= _amount, "Insuffient funds to contribute");
         require(contributors[recipient].opt_in_status == true, "Recipient opted out to receive funds");
-        token.transferFrom(sender, recipient, _amount);
-        emit Contribute(sender, recipient, _amount);
+        contributors[msg.sender].amount -= _amount;
+        token.transferFrom(msg.sender, recipient, _amount);
+        emit Contribute(msg.sender, recipient, _amount);
     }
 
     /**
