@@ -114,7 +114,7 @@ describe("Reward Contributors Contract", function () {
       await reward.connect(alice).contribute(bob.address, grantedTokens - 50);
       await reward.connect(bob).contribute(carol.address, grantedTokens - 60);
       await reward.connect(carol).contribute(bob.address, grantedTokens - 30);
-      let addr = await reward.ContributorWithMostRewards();
+      let addr = await reward.contributorWithMostRewards();
       expect(addr).to.be.equal(bob.address);
     });
 
