@@ -229,6 +229,7 @@ contract RewardContributors is AccessControl {
         onlyRole(DEFAULT_ADMIN_ROLE)
         returns (address)
     {
+        require(contributorsList.length == 0, "No contributors at the moment");
         address maxRewardContributor = contributorsList[0];
         for (uint256 i = 1; i < contributorsList.length; i++) {
             if (
