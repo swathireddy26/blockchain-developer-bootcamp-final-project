@@ -2,7 +2,7 @@
 
 ## Access Control Design Patterns
 
-- `Access Control' design pattern is used in RewardContributors contract to restrict certain access for users. These functions can only be accessed by the users who have certain roles.
+- `Access Control` design pattern is used in RewardContributors contract to restrict certain access for users. These functions can only be accessed by the users who have certain roles.
 
 ## Inheritance and Interfaces
 
@@ -10,6 +10,6 @@
 
 ## Inter-Contract Execution 
 
-- 'RewardContributors' contract makes use of external contract functions, i.e ERC20 contract functions.
+- `RewardContributors` contract makes use of external contract functions, i.e ERC20 contract functions.
 
 
