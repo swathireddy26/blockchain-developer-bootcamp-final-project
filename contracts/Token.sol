@@ -1,20 +1,19 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+pragma solidity 0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 contract Token is ERC20, Pausable {
-    /** 
+    /**
      * @dev Constructor for Token contract
      */
-    constructor() ERC20("give coin", "GIVE"){
-        _mint(msg.sender, 10000 * 10 ** decimals());
+    constructor() ERC20("give coin", "GIVE") {
+        _mint(msg.sender, 10000 * 10**decimals());
     }
-    
 
-    /** 
-     * @dev Function to be used by owner to mint new tokens
+    /**
+     * @dev Function to mint new tokens
      * @param to Address to which newly minted tokens should go
      * @param amount Quantity of token to be minted
      */
@@ -22,8 +21,8 @@ contract Token is ERC20, Pausable {
         _mint(to, amount);
     }
 
-    /** 
-     * @dev Function to be used by owner to burn tokens
+    /**
+     * @dev Function to burn tokens
      * @param from Address where tokens gets burned from
      * @param amount Quantity of token to be burned
      */
@@ -31,17 +30,17 @@ contract Token is ERC20, Pausable {
         _burn(from, amount);
     }
 
-    /** 
-     * @dev Function to be used by owner to pause
+    /**
+     * @dev Function to pause
      */
     function pause() public {
         _pause();
     }
 
     /**
-     * @dev Function to be used by owner to unpause
+     * @dev Function to unpause
      */
-    function unpause() public  {
+    function unpause() public {
         _unpause();
     }
 
@@ -59,7 +58,7 @@ contract Token is ERC20, Pausable {
         address from,
         address to,
         uint256 amount
-    ) internal whenNotPaused override {
+    ) internal override whenNotPaused {
         super._beforeTokenTransfer(from, to, amount);
     }
 }
