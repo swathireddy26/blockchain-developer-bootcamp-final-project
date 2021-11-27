@@ -68,3 +68,29 @@
   transform: translate(-50%, -50%);
   text-align: center;
 }
+
+.button {
+  background-color: #444444;
+  border: 1px solid #008cba;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  transition-duration: 0.4s;
+  width: 180px;
+}
+
+.button:hover {
+  background-color: black; /* Green */
+  color: white;
+  cursor: pointer;
+}
+
+input[type="text"] {
+  width: 180px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}

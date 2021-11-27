@@ -132,7 +132,7 @@ contract RewardContributors is AccessControl {
      */
     function endEpoch() public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(
-            block.timestamp - timeStamp >= 10 days,
+            block.timestamp - timeStamp >= 2 minutes,
             "Epoch end time not reached"
         );
         burnTokens();
@@ -201,7 +201,10 @@ contract RewardContributors is AccessControl {
         public
         onlyRole(CONTRIBUTOR_ROLE)
     {
-        require(block.timestamp - timeStamp <= 10 days, "Lockin Period ended");
+        require(
+            block.timestamp - timeStamp <= 2 minutes,
+            "Lockin Period ended"
+        );
         require(
             hasRole(CONTRIBUTOR_ROLE, recipient) == true,
             "recipient is not a contributer"
@@ -223,12 +226,7 @@ contract RewardContributors is AccessControl {
      * @dev This Function to be used by Admin to find the contributor with the most rewards
      * @return returns the address of the contributor with most rewards
      */
-    function contributorWithMostRewards()
-        public
-        view
-        onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (address)
-    {
+    function contributorWithMostRewards() public view returns (address) {
         require(contributorsList.length != 0, "No contributors at the moment");
         address maxRewardContributor = contributorsList[0];
         for (uint256 i = 1; i < contributorsList.length; i++) {

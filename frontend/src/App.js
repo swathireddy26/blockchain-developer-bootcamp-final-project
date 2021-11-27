@@ -11,8 +11,13 @@ function App() {
   const [ contributor, setContributor ] = useState(0);
   const [ grantedTokens, setGrantedTokens ] = useState(0);
   const [ reward, setReward ] = useState(0);
+  const [ contributorListVisibility, setContributorListVisibility] = useState(false);
+  const [ bestContributorVisibility, setBestContributorVisibility] = useState(false);
+  const [ contributorList, setContributorList ] = useState(0);
   async function requestAccount() {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
+    setContributorListVisibility(false);
+    setBestContributorVisibility(false);
   }
  
   async function fetchBalance() {
@@ -23,7 +28,8 @@ function App() {
       const contract = new ethers.Contract(Reward.address, Reward.abi, signer);
       try {
         const balance = await contract.getBalance(signer.getAddress());
-        setBalance(balance.toString());
+        const newBalance = (balance / Math.pow(10,5));
+        setBalance(newBalance.toString());
       } catch (err) {
         console.log('Error: ', err);
       }
@@ -93,6 +99,8 @@ function App() {
       const contract = new ethers.Contract(Reward.address, Reward.abi, provider);
       try {
         const contributors = await contract.listContributors();
+        setContributorList(contributors);
+        setContributorListVisibility(true);
         console.log(contributors);
       } catch (err) {
         console.log('Error: ', err);
@@ -106,6 +114,8 @@ function App() {
       const contract = new ethers.Contract(Reward.address, Reward.abi, signer);
       try {
         const contributor = await contract.contributorWithMostRewards();
+        setContributorList(contributor);
+        setBestContributorVisibility(contributor);
         console.log(contributor);
       } catch (err) {
         console.log('Error: ', err);
@@ -193,15 +203,27 @@ function App() {
     <div class="split left">
       <div class="centered">
       <h1> Admin </h1>
-        <input type="text" onChange={e => setContributor(e.target.value)} placeholder="Contributor Address" />
-        <button className="button" onClick={addContributor}>Add Contributor</button><br />
-        <input type="text" onChange={e => setContributor(e.target.value)} placeholder="Contributor Address" />
-        <button className="button" onClick={removeContributor}>Remove Contributor</button><br />
-        <input type="text" onChange={e => setGrantedTokens(e.target.value)} placeholder="Number of tokens" />
-        <button className="button" onClick={startEpoch}>Grant Tokens during Start Epoch</button><br />
-        <button className="button" onClick={endEpoch}>End Epoch</button><br />
-        <button className="button" onClick={getContributorWithMostRewards}>ContributorWithMostRewards</button><br />
+        <input type="text" onChange={e => setContributor(e.target.value)} placeholder="Contributor Address" /><br />
+        <button className="button" onClick={addContributor}>Add Contributor</button>&nbsp;
+        {/* <input type="text" onChange={e => setContributor(e.target.value)} placeholder="Contributor Address" /> */}
+        <button className="button" onClick={removeContributor}>Remove Contributor</button><br /><br />
+        <input type="text" onChange={e => setGrantedTokens(e.target.value)} placeholder="Number of tokens" />&nbsp;
+        <button className="button" onClick={startEpoch}>Start Epoch</button><br /><br />
+        <button className="button" onClick={endEpoch}>End Epoch</button><br /><br />
+        <button className="button" onClick={getContributorWithMostRewards}>Best Contributor</button><br /><br />
+        { bestContributorVisibility && 
+          <p>{contributorList}</p>
+        }
         <button className="button" onClick={getContributorList}>Get Contributors List</button><br />
+        { contributorListVisibility && 
+          <ol>
+            {contributorList.map(name => (
+              <li>
+                {name}
+              </li>
+            ))} 
+          </ol> 
+        }
       </div>
     </div>
     <div class="split right">
@@ -209,13 +231,13 @@ function App() {
         <h1> Contributor </h1>
         <button className="button" onClick={fetchBalance}>Get Balance</button>
         <p>Balance: {balance}</p>
-        <button className="button" onClick={optIn}>Opt In</button><br />
-        <button className="button" onClick={optOut}>Opt Out</button><br />
-        <input type="text" onChange={e => setApproveValue(e.target.value)} placeholder="Set Contributor Allowance" />
-        <button className="button" onClick={approve}>Approve Allowance</button><br />
+        <input type="text" onChange={e => setApproveValue(e.target.value)} placeholder="Contributor Allowance" />&nbsp;
+        <button className="button" onClick={approve}>Approve Allowance</button><br /><br />
         <button className="button" onClick={getAllowance}>Get Allowance</button>
         <p>Allowance: {allowance}</p>
-        <input type="text" onChange={e => setContributor(e.target.value)} placeholder="select contributer" />
+        <button className="button" onClick={optIn}>Opt In</button>&nbsp;
+        <button className="button" onClick={optOut}>Opt Out</button><br /><br/>
+        <input type="text" onChange={e => setContributor(e.target.value)} placeholder="Contributor Address" />&nbsp;
         <input type="text" onChange={e => setReward(e.target.value)} placeholder="Amount to Contribute" />
         <button className="button" onClick={rewardContributor}>contribute</button><br />
     </div>
