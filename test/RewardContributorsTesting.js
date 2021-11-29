@@ -122,7 +122,7 @@ describe("Reward Contributors Contract", function () {
       await reward.addContributor(alice.address);
       await reward.addContributor(bob.address);
       await reward.startEpoch(grantedTokens);
-      await network.provider.send("evm_increaseTime", [11 * 24 * 60 * 60]);
+      await network.provider.send("evm_increaseTime", [3 * 60]);
       await reward.endEpoch();
       await expect(
         reward.connect(alice).contribute(bob.address, 50)

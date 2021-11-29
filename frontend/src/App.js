@@ -239,7 +239,7 @@ function App() {
         <button className="button" onClick={optOut}>Opt Out</button><br /><br/>
         <input type="text" onChange={e => setContributor(e.target.value)} placeholder="Contributor Address" />&nbsp;
         <input type="text" onChange={e => setReward(e.target.value)} placeholder="Amount to Contribute" />
-        <button className="button" onClick={rewardContributor}>contribute</button><br />
+        <button className="button" onClick={rewardContributor}>Reward</button><br />
     </div>
     </div>
     </div>
