@@ -1,0 +1,3 @@
+Token Contract Address: 0x1c6Fd54d0FFaAd6cDD1BA1dE64fEDbFd8a257689
+RewardContributors Contract Address: 0xe5e1fE3B4B3A66FbA55203236625dA56212FC4cf
+Network: Rinkeby 
