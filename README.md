@@ -12,12 +12,20 @@ https://reward-contributors.vercel.app/
 - Hardhat
 - `git checkout master`
 
-### Smart contracts
+### Smart contract deployment in localhost
+
+- Run `npm install` in project root
+- Run `npx hardhat node` in project root (Account #0 will be the Admin, other accounts can be added to metamask to be used as contributors)
+- Run `npx hardhat test` to run tests
+- Run `npx hardhat run --network localhost scripts/deploy.js` to deploy contracts locally
+
+
+### Smart contract deployment in rinkeby
 
 - Run `npm install` in project root 
 - Create .env file in project root by supplying rinkeby `alchemy_url` and `PRIVATE_KEY`
 - Run `npx hardhat test` to run tests
-- Run `npx hardhat run --network rinkeby scripts/deploy.js` to deploy the contracts in rinkeby
+- Run `npx hardhat run --network rinkeby scripts/deploy.js` to deploy contracts in rinkeby
 
 ### Front-end
 
