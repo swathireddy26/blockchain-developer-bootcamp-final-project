@@ -3,6 +3,7 @@
 ## Deployed version url:
 
 https://reward-contributors.vercel.app/
+<br>(Since this application needs either admin access (who is the owner of the contract) or contributors (which are the accounts that are added by the admin inside the project), with other accounts, no functionality can be tested. To test, one need to deploy the smart contrat. I have used 2min as the epoch while recording the demo. But, I later updated the epoch time to 5min to have more time to reward)
 
 ## How to run this project locally:
 
