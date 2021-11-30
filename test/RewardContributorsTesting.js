@@ -64,22 +64,22 @@ describe("Reward Contributors Contract", function () {
       await expect(reward.endEpoch()).to.not.be.reverted;
     });
 
-    it("Should be able to contribute during the epoch", async function () {
+    it("Should be able to reward during the epoch", async function () {
       await reward.addContributor(alice.address);
       await reward.addContributor(bob.address);
       await reward.startEpoch(grantedTokens);
       await token.connect(alice).approve(reward.address, grantedTokens);
-      await reward.connect(alice).contribute(bob.address, 50);  
+      await reward.connect(alice).rewardContributor(bob.address, 50);  
     });
 
-    it("Should not be able to contribute more than allotted funds", async function () {
+    it("Should not be able to reward more than allotted funds", async function () {
       await reward.addContributor(alice.address);
       await reward.addContributor(bob.address);
       await reward.startEpoch(grantedTokens);
       await token.connect(alice).approve(reward.address, grantedTokens);
       await expect(
-        reward.connect(alice).contribute(bob.address, grantedTokens + 50)
-      ).to.be.revertedWith("Insuffient funds to contribute"); 
+        reward.connect(alice).rewardContributor(bob.address, grantedTokens + 50)
+      ).to.be.revertedWith("Insuffient funds to reward"); 
     });
 
     it("Should not be able to receive funds when contributer is opted out of receiving", async function () {
@@ -89,7 +89,7 @@ describe("Reward Contributors Contract", function () {
       await reward.startEpoch(grantedTokens);
       await token.connect(alice).approve(reward.address, grantedTokens);
       await expect(
-        reward.connect(alice).contribute(bob.address, grantedTokens)
+        reward.connect(alice).rewardContributor(bob.address, grantedTokens)
       ).to.be.revertedWith("Recipient opted out to receive funds"); 
     });
 
@@ -100,7 +100,7 @@ describe("Reward Contributors Contract", function () {
       await reward.startEpoch(grantedTokens);
       await reward.connect(bob).optIn();
       await token.connect(alice).approve(reward.address, grantedTokens);
-      await reward.connect(alice).contribute(bob.address, grantedTokens);
+      await reward.connect(alice).rewardContributor(bob.address, grantedTokens);
     });
 
     it("Should be able to find the Contributor with most rewards", async function () {
@@ -111,21 +111,21 @@ describe("Reward Contributors Contract", function () {
       await token.connect(alice).approve(reward.address, grantedTokens);
       await token.connect(bob).approve(reward.address, grantedTokens);
       await token.connect(carol).approve(reward.address, grantedTokens);
-      await reward.connect(alice).contribute(bob.address, grantedTokens - 50);
-      await reward.connect(bob).contribute(carol.address, grantedTokens - 60);
-      await reward.connect(carol).contribute(bob.address, grantedTokens - 30);
+      await reward.connect(alice).rewardContributor(bob.address, grantedTokens - 50);
+      await reward.connect(bob).rewardContributor(carol.address, grantedTokens - 60);
+      await reward.connect(carol).rewardContributor(bob.address, grantedTokens - 30);
       let addr = await reward.contributorWithMostRewards();
       expect(addr).to.be.equal(bob.address);
     });
 
-    it("Should not be able to contribute after the epoch has ended", async function () {
+    it("Should not be able to reward after the epoch has ended", async function () {
       await reward.addContributor(alice.address);
       await reward.addContributor(bob.address);
       await reward.startEpoch(grantedTokens);
-      await network.provider.send("evm_increaseTime", [3 * 60]);
+      await network.provider.send("evm_increaseTime", [6 * 60]);
       await reward.endEpoch();
       await expect(
-        reward.connect(alice).contribute(bob.address, 50)
+        reward.connect(alice).rewardContributor(bob.address, 50)
       ).to.be.revertedWith("Lockin Period ended");
       
     });

@@ -43,7 +43,11 @@ contract RewardContributors is AccessControl {
      * @dev Emitted when `amount` tokens are moved from one account (`sender`) to
      * another (`recipient`) as reward
      */
-    event Contribute(address sender, address recipient, uint256 amount);
+    event RewardedContributor(
+        address sender,
+        address recipient,
+        uint256 amount
+    );
 
     constructor(address tokenAddr) {
         token = Token(tokenAddr);
@@ -132,7 +136,7 @@ contract RewardContributors is AccessControl {
      */
     function endEpoch() public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(
-            block.timestamp - timeStamp >= 2 minutes,
+            block.timestamp - timeStamp >= 5 minutes,
             "Epoch end time not reached"
         );
         burnTokens();
@@ -197,12 +201,12 @@ contract RewardContributors is AccessControl {
      * @param _amount amount which is getting transferred as reward
      * and function emits Contribute event
      */
-    function contribute(address recipient, uint256 _amount)
+    function rewardContributor(address recipient, uint256 _amount)
         public
         onlyRole(CONTRIBUTOR_ROLE)
     {
         require(
-            block.timestamp - timeStamp <= 2 minutes,
+            block.timestamp - timeStamp <= 5 minutes,
             "Lockin Period ended"
         );
         require(
@@ -211,7 +215,7 @@ contract RewardContributors is AccessControl {
         );
         require(
             contributors[msg.sender].amount >= _amount,
-            "Insuffient funds to contribute"
+            "Insuffient funds to reward"
         );
         require(
             contributors[recipient].opt_in_status == true,
@@ -219,7 +223,7 @@ contract RewardContributors is AccessControl {
         );
         contributors[msg.sender].amount -= _amount;
         token.transferFrom(msg.sender, recipient, _amount);
-        emit Contribute(msg.sender, recipient, _amount);
+        emit RewardedContributor(msg.sender, recipient, _amount);
     }
 
     /**
