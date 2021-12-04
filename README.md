@@ -41,7 +41,7 @@ https://www.loom.com/share/7c03a1c49773452786a4c4c2e42205c6?sharedAppSource=pers
 
 ## Public Ethereum wallet for certification:
 
-`0xc81e60BEA7D7E2bD7b6797B73897c0Be6f72a37f`
+
 
 ## Project description
 
